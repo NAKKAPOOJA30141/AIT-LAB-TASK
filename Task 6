@@ -1,0 +1,71 @@
+program:
+def is_safe(node, color, graph, colors):
+    for neighbor in graph[node]:
+        if colors[neighbor] == color:
+            return False
+    return True
+
+
+def graph_coloring_util(index, graph, colors, vertices, max_colors):
+    if index == len(vertices):
+        return True
+
+    current_node = vertices[index]
+
+    for color in range(1, max_colors + 1):
+        if is_safe(current_node, color, graph, colors):
+            colors[current_node] = color
+
+            if graph_coloring_util(
+                index + 1, graph, colors, vertices, max_colors
+            ):
+                return True
+
+            colors[current_node] = 0
+
+    return False
+
+
+def find_chromatic_number(graph):
+    vertices = list(graph.keys())
+
+    for num_colors in range(1, len(vertices) + 1):
+        colors = {node: 0 for node in graph}
+
+        if graph_coloring_util(
+            0, graph, colors, vertices, num_colors
+        ):
+            return num_colors, colors
+
+    return None
+
+
+
+graph = {
+    'a': ['b', 'c'],
+    'b': ['a', 'c'],
+    'c': ['a', 'b'],
+    'd': ['b', 'e', 'f'],
+    'e': ['b', 'd'],
+    'f': ['d']
+}
+
+
+min_colors, color_assignment = find_chromatic_number(graph)
+
+print("Vertex Color Assignment")
+
+for vertex in graph:
+    print(f"Vertex {vertex} -> Color {color_assignment[vertex]}")
+
+print("Minimum number of colors:", min_colors)
+
+ouput:
+Vertex Color Assignment
+Vertex a -> Color 1
+Vertex b -> Color 2
+Vertex c -> Color 3
+Vertex d -> Color 1
+Vertex e -> Color 3
+Vertex f -> Color 2
+Minimum number of colors: 3
